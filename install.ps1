@@ -6,7 +6,15 @@ try {
 
 $AppName = "Abingo Codex"
 $BaseUrl = "https://codex.abingo.xyz/v1"
-$DefaultModel = "gpt-5.5"
+$DefaultModel = if ($env:ABINGO_CODEX_MODEL) { $env:ABINGO_CODEX_MODEL } else { "gpt-5.5" }
+$ReasoningEffort = if ($env:ABINGO_CODEX_REASONING_EFFORT) { $env:ABINGO_CODEX_REASONING_EFFORT } else { "xhigh" }
+$ContextWindow = if ($env:ABINGO_CODEX_CONTEXT_WINDOW) { [int]$env:ABINGO_CODEX_CONTEXT_WINDOW } else { 262144 }
+$AutoCompactTokenLimit = if ($env:ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT) { [int]$env:ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT } else { 242000 }
+
+if ($ContextWindow -le 0 -or $AutoCompactTokenLimit -le 0) {
+    Write-Host "Error: context window values must be positive integers." -ForegroundColor Red
+    exit 1
+}
 
 function Write-Title {
     Write-Host "=================================================="
@@ -14,6 +22,9 @@ function Write-Title {
     Write-Host "=================================================="
     Write-Host "Service URL: $BaseUrl"
     Write-Host "System: Windows PowerShell"
+    Write-Host "Context window: $ContextWindow"
+    Write-Host "Auto compact limit: $AutoCompactTokenLimit"
+    Write-Host "Reasoning effort: $ReasoningEffort"
     Write-Host ""
 }
 
@@ -74,8 +85,13 @@ if ([string]::IsNullOrWhiteSpace($Model)) {
 
 Write-Host ""
 
-$SecureKey = Read-Host "Enter your Abingo Codex key, usually starting with sk-" -AsSecureString
-$ApiKey = Convert-SecureStringToPlainText $SecureKey
+$ApiKey = if ($env:ABINGO_CODEX_KEY) { $env:ABINGO_CODEX_KEY } elseif ($env:OPENAI_API_KEY) { $env:OPENAI_API_KEY } else { "" }
+if (-not [string]::IsNullOrWhiteSpace($ApiKey)) {
+    Write-Host "Using API key from environment."
+} else {
+    $SecureKey = Read-Host "Enter your Abingo Codex key, usually starting with sk-" -AsSecureString
+    $ApiKey = Convert-SecureStringToPlainText $SecureKey
+}
 
 if ([string]::IsNullOrWhiteSpace($ApiKey)) {
     Write-Host "Error: key cannot be empty." -ForegroundColor Red
@@ -99,12 +115,12 @@ $ConfigLines = @(
     'model_provider = "abingo_codex"',
     "model = `"$Model`"",
     "review_model = `"$Model`"",
-    'model_reasoning_effort = "high"',
+    "model_reasoning_effort = `"$ReasoningEffort`"",
     'disable_response_storage = true',
     'network_access = "enabled"',
     'windows_wsl_setup_acknowledged = true',
-    'model_context_window = 262144',
-    'model_auto_compact_token_limit = 242000',
+    "model_context_window = $ContextWindow",
+    "model_auto_compact_token_limit = $AutoCompactTokenLimit",
     '',
     '[model_providers.abingo_codex]',
     'name = "Abingo Codex"',
@@ -132,6 +148,9 @@ Write-Host "Config file: $ConfigFile"
 Write-Host "Auth file: $AuthFile"
 Write-Host "Service URL: $BaseUrl"
 Write-Host "Default model: $Model"
+Write-Host "Reasoning effort: $ReasoningEffort"
+Write-Host "Context window: $ContextWindow"
+Write-Host "Auto compact limit: $AutoCompactTokenLimit"
 Write-Host ""
 
 Write-Host "Testing service connection..."

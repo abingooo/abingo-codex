@@ -63,6 +63,13 @@ Recommended:
 curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
 ```
 
+Non-interactive Ubuntu/server install:
+
+```bash
+export ABINGO_CODEX_KEY="sk-..."
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
+```
+
 Python fallback:
 
 ```bash
@@ -109,6 +116,17 @@ Enter the key provided to you. It usually starts with:
 sk-
 ```
 
+The installers also support these environment variables for server or scripted installs:
+
+```text
+ABINGO_CODEX_KEY
+OPENAI_API_KEY
+ABINGO_CODEX_MODEL
+ABINGO_CODEX_REASONING_EFFORT
+ABINGO_CODEX_CONTEXT_WINDOW
+ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT
+```
+
 ## Default Configuration
 
 The setup tool writes the following default configuration:
@@ -117,7 +135,9 @@ The setup tool writes the following default configuration:
 Service name: Abingo Codex
 Service URL: https://codex.abingo.xyz/v1
 Default model: gpt-5.5
-Fallback model: gpt-5.4
+Reasoning effort: xhigh
+Context window: 262144
+Auto compact token limit: 242000
 ```
 
 After setup, run:
@@ -163,11 +183,11 @@ The generated `config.toml` will look similar to this:
 model_provider = "abingo_codex"
 model = "gpt-5.5"
 review_model = "gpt-5.5"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 disable_response_storage = true
 network_access = "enabled"
-model_context_window = 100000
-model_auto_compact_token_limit = 90000
+model_context_window = 262144
+model_auto_compact_token_limit = 242000
 
 [model_providers.abingo_codex]
 name = "Abingo Codex"
@@ -223,6 +243,13 @@ To update your local configuration, simply run the setup command again.
 Linux / macOS:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
+```
+
+Linux / macOS non-interactive:
+
+```bash
+export ABINGO_CODEX_KEY="sk-..."
 curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
 ```
 

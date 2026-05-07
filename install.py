@@ -13,7 +13,13 @@ from pathlib import Path
 
 APP_NAME = "Abingo Codex"
 BASE_URL = "https://codex.abingo.xyz/v1"
-DEFAULT_MODEL = "gpt-5.5"
+DEFAULT_MODEL = os.environ.get("ABINGO_CODEX_MODEL", "gpt-5.5")
+DEFAULT_REASONING_EFFORT = os.environ.get("ABINGO_CODEX_REASONING_EFFORT", "xhigh")
+CONTEXT_WINDOW = int(os.environ.get("ABINGO_CODEX_CONTEXT_WINDOW", "262144"))
+AUTO_COMPACT_TOKEN_LIMIT = int(os.environ.get("ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT", "242000"))
+
+if CONTEXT_WINDOW <= 0 or AUTO_COMPACT_TOKEN_LIMIT <= 0:
+    raise ValueError("Context window values must be positive integers.")
 
 
 def open_console():
@@ -74,6 +80,14 @@ def ask(question, default=None):
     return answer
 
 
+def env_value(*names):
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            return value.strip()
+    return ""
+
+
 def command_exists(command):
     return shutil.which(command) is not None
 
@@ -102,16 +116,17 @@ def write_codex_config(model, api_key):
 
     safe_model = toml_escape(model)
     safe_base_url = toml_escape(BASE_URL)
+    safe_reasoning_effort = toml_escape(DEFAULT_REASONING_EFFORT)
 
     config_content = f'''model_provider = "abingo_codex"
 model = "{safe_model}"
 review_model = "{safe_model}"
-model_reasoning_effort = "high"
+model_reasoning_effort = "{safe_reasoning_effort}"
 disable_response_storage = true
 network_access = "enabled"
 windows_wsl_setup_acknowledged = true
-model_context_window = 262144
-model_auto_compact_token_limit = 242000
+model_context_window = {CONTEXT_WINDOW}
+model_auto_compact_token_limit = {AUTO_COMPACT_TOKEN_LIMIT}
 
 [model_providers.abingo_codex]
 name = "Abingo Codex"
@@ -175,6 +190,9 @@ def print_header():
     say(f"Service URL: {BASE_URL}")
     say(f"System: {platform.system()} {platform.machine()}")
     say(f"Python: {platform.python_version()}")
+    say(f"Context window: {CONTEXT_WINDOW}")
+    say(f"Auto compact limit: {AUTO_COMPACT_TOKEN_LIMIT}")
+    say(f"Reasoning effort: {DEFAULT_REASONING_EFFORT}")
     say()
 
 
@@ -196,10 +214,14 @@ def main():
 
     print_header()
 
-    model = ask("Model name, press Enter to use default", DEFAULT_MODEL)
+    model = env_value("ABINGO_CODEX_MODEL") or ask("Model name, press Enter to use default", DEFAULT_MODEL)
 
     say()
-    api_key = ask("Enter your Abingo Codex key, usually starting with sk-")
+    api_key = env_value("ABINGO_CODEX_KEY", "OPENAI_API_KEY")
+    if api_key:
+        say("Using API key from environment.")
+    else:
+        api_key = ask("Enter your Abingo Codex key, usually starting with sk-")
 
     if not api_key:
         say("Error: key cannot be empty.")
@@ -218,6 +240,9 @@ def main():
     say(f"Auth file: {auth_file}")
     say(f"Service URL: {BASE_URL}")
     say(f"Default model: {model}")
+    say(f"Reasoning effort: {DEFAULT_REASONING_EFFORT}")
+    say(f"Context window: {CONTEXT_WINDOW}")
+    say(f"Auto compact limit: {AUTO_COMPACT_TOKEN_LIMIT}")
     say()
 
     say("Testing service connection...")
