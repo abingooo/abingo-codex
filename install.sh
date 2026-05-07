@@ -116,8 +116,8 @@ review_model = "$SAFE_MODEL"
 model_reasoning_effort = "high"
 disable_response_storage = true
 network_access = "enabled"
-model_context_window = 100000
-model_auto_compact_token_limit = 90000
+model_context_window = 262144
+model_auto_compact_token_limit = 242000
 
 [model_providers.abingo_codex]
 name = "Abingo Codex"
