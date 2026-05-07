@@ -311,6 +311,14 @@ export ABINGO_CLAUDE_KEY="your-gateway-token"
 curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
 ```
 
+Interactive Linux / macOS install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
+```
+
+The installer will ask you to enter the gateway token.
+
 Windows PowerShell:
 
 ```powershell
@@ -318,6 +326,14 @@ $env:ABINGO_CLAUDE_KEY = "your-gateway-token"
 $env:ABINGO_CLAUDE_NONINTERACTIVE = "1"
 irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
 ```
+
+Interactive Windows PowerShell install:
+
+```powershell
+irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
+```
+
+The installer will ask you to enter the gateway token.
 
 Python fallback:
 

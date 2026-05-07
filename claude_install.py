@@ -17,6 +17,7 @@ DEFAULT_MODEL = os.environ.get("ABINGO_CLAUDE_MODEL", "claude-codex")
 DEFAULT_EFFORT = os.environ.get("ABINGO_CLAUDE_EFFORT_LEVEL", "max")
 DEFAULT_TIMEOUT_MS = os.environ.get("ABINGO_CLAUDE_TIMEOUT_MS", "600000")
 DEFAULT_PERMISSION_MODE = os.environ.get("ABINGO_CLAUDE_PERMISSION_MODE", "bypassPermissions")
+NONINTERACTIVE = os.environ.get("ABINGO_CLAUDE_NONINTERACTIVE") == "1"
 
 
 def open_console():
@@ -207,8 +208,15 @@ def main():
 
     print_header()
 
-    base_url = env_value("ABINGO_CLAUDE_BASE_URL") or ask("Gateway URL, press Enter to use default", DEFAULT_BASE_URL)
-    model = env_value("ABINGO_CLAUDE_MODEL") or ask("Model name, press Enter to use default", DEFAULT_MODEL)
+    if env_value("ABINGO_CLAUDE_BASE_URL") or NONINTERACTIVE:
+        base_url = DEFAULT_BASE_URL
+    else:
+        base_url = ask("Gateway URL, press Enter to use default", DEFAULT_BASE_URL)
+
+    if env_value("ABINGO_CLAUDE_MODEL") or NONINTERACTIVE:
+        model = DEFAULT_MODEL
+    else:
+        model = ask("Model name, press Enter to use default", DEFAULT_MODEL)
 
     say()
     auth_token = env_value("ABINGO_CLAUDE_KEY", "ANTHROPIC_AUTH_TOKEN")
@@ -219,6 +227,8 @@ def main():
 
     if not auth_token:
         say("Error: token cannot be empty.")
+        say("Run this installer in an interactive terminal to enter the token when prompted.")
+        say("Set ABINGO_CLAUDE_KEY or ANTHROPIC_AUTH_TOKEN for non-interactive installs.")
         sys.exit(1)
 
     settings_file = write_settings(base_url, model, auth_token)

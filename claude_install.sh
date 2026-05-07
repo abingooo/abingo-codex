@@ -12,7 +12,7 @@ say() {
 }
 
 has_tty() {
-  [ -t 0 ] || [ -t 1 ] || { [ -r /dev/tty ] && [ -w /dev/tty ] && (true < /dev/tty) 2>/dev/null; }
+  [ -r /dev/tty ] && [ -w /dev/tty ] && (true < /dev/tty) 2>/dev/null
 }
 
 prompt() {
@@ -102,6 +102,7 @@ fi
 
 if [ -z "$AUTH_TOKEN" ]; then
   say "Error: token cannot be empty."
+  say "Run this installer in an interactive terminal to enter the token when prompted."
   say "Set ABINGO_CLAUDE_KEY or ANTHROPIC_AUTH_TOKEN for non-interactive installs."
   exit 1
 fi

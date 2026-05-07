@@ -119,6 +119,8 @@ if (-not [string]::IsNullOrWhiteSpace($AuthToken)) {
 
 if ([string]::IsNullOrWhiteSpace($AuthToken)) {
     Write-Host "Error: token cannot be empty." -ForegroundColor Red
+    Write-Host "Run this installer in an interactive terminal to enter the token when prompted."
+    Write-Host "Set ABINGO_CLAUDE_KEY or ANTHROPIC_AUTH_TOKEN for non-interactive installs."
     exit 1
 }
 
