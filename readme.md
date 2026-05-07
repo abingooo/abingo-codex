@@ -1,225 +1,218 @@
-# Abingo Codex Setup Tool
+# Abingo Codex
 
-A simple cross-platform setup tool for configuring Codex CLI with Abingo Codex.
+Cross-platform installers for configuring local AI coding CLIs to use Abingo gateways.
 
-## Overview
-
-Abingo Codex Setup Tool helps you quickly configure Codex CLI to use the Abingo Codex service.
-
-It automatically creates or updates the following local Codex configuration files:
+This repository configures:
 
 ```text
-~/.codex/config.toml
-~/.codex/auth.json
+Codex CLI   -> https://codex.abingo.xyz/v1
+Claude Code -> https://claude.abingo.xyz
 ```
 
-On Windows, the files are located at:
+It does not include secret keys and does not install the upstream `codex` or `claude` CLI binaries.
+
+## Installers
 
 ```text
-C:\Users\<YourUserName>\.codex\config.toml
-C:\Users\<YourUserName>\.codex\auth.json
+install.sh           Linux / macOS Codex installer
+install.ps1          Windows PowerShell Codex installer
+install.py           Cross-platform Codex fallback installer
+
+claude_install.sh    Linux / macOS Claude Code gateway installer
+claude_install.ps1   Windows PowerShell Claude Code gateway installer
+claude_install.py    Cross-platform Claude Code fallback installer
 ```
 
-Existing configuration files will be backed up automatically before new files are written.
+## Quick Start
 
-## Requirements
+### Codex CLI
 
-### Linux / macOS
+Use this when you want the `codex` command to use Abingo Codex.
 
-Required:
-
-- `sh`
-- `curl`
-- Network access to `https://codex.abingo.xyz`
-- An Abingo Codex key, usually starting with `sk-`
-
-Optional:
-
-- Python 3, only needed for the Python fallback installer
-- Codex CLI, required to run `codex` after setup
-
-### Windows
-
-Required:
-
-- PowerShell
-- Network access to `https://codex.abingo.xyz`
-- An Abingo Codex key, usually starting with `sk-`
-
-Optional:
-
-- Python 3, only needed for the Python fallback installer
-- Codex CLI, required to run `codex` after setup
-
-This repository does not include any secret keys. You need to enter your own Abingo Codex key during setup.
-
-## Quick Setup
-
-### Linux / macOS
-
-Recommended:
+Linux / macOS:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
 ```
 
-Non-interactive Ubuntu/server install:
+Linux server or non-interactive install:
 
 ```bash
 export ABINGO_CODEX_KEY="sk-..."
 curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
 ```
 
-Python fallback:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.py | python3 -
-```
-
-### Windows PowerShell
-
-Recommended:
+Windows PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.ps1 | iex
 ```
 
-Python fallback:
-
-```powershell
-irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.py | py -3 -
-```
-
-## Setup Prompts
-
-During setup, the script will ask for:
-
-```text
-Model name
-```
-
-Press Enter to use the default model:
-
-```text
-gpt-5.5
-```
-
-Then it will ask for:
-
-```text
-Abingo Codex key
-```
-
-Enter the key provided to you. It usually starts with:
-
-```text
-sk-
-```
-
-The installers also support these environment variables for server or scripted installs:
-
-```text
-ABINGO_CODEX_KEY
-OPENAI_API_KEY
-ABINGO_CODEX_MODEL
-ABINGO_CODEX_REASONING_EFFORT
-ABINGO_CODEX_CONTEXT_WINDOW
-ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT
-```
-
-## Default Configuration
-
-The setup tool writes the following default configuration:
-
-```text
-Service name: Abingo Codex
-Service URL: https://codex.abingo.xyz/v1
-Default model: gpt-5.5
-Reasoning effort: xhigh
-Context window: 262144
-Auto compact token limit: 242000
-```
-
-After setup, run:
+After setup:
 
 ```bash
 codex
 ```
 
-## If GPT-5.5 Is Not Available
+### Claude Code Gateway
 
-If `gpt-5.5` is not available, run the setup command again and enter:
+Use this when you want the `claude` command to use the Abingo Claude gateway.
 
-```text
-gpt-5.4
+Linux / macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
 ```
 
-when prompted for the model name.
+Linux server or non-interactive install:
 
-## What the Setup Tool Does
+```bash
+export ABINGO_CLAUDE_KEY="your-gateway-token"
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
+```
 
-The installer will:
+Windows PowerShell:
 
-- Create the `~/.codex` directory if it does not exist
-- Back up existing Codex configuration files
-- Write a new `config.toml`
-- Write a new `auth.json`
-- Configure Codex CLI to use Abingo Codex
-- Test the Abingo Codex service connection
-- Check whether the `codex` command exists
+```powershell
+irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
+```
 
-If existing configuration files are found, they will be backed up automatically, for example:
+Windows PowerShell non-interactive install:
+
+```powershell
+$env:ABINGO_CLAUDE_KEY = "your-gateway-token"
+$env:ABINGO_CLAUDE_NONINTERACTIVE = "1"
+irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
+```
+
+After setup:
+
+```bash
+claude
+```
+
+## What Gets Written
+
+Existing files are backed up before being replaced. Backup names look like:
 
 ```text
 config.toml.bak.20260507_123456
-auth.json.bak.20260507_123456
+settings.json.bak.20260507_123456
 ```
 
-## Generated Configuration
+Codex configuration:
 
-The generated `config.toml` will look similar to this:
-
-```toml
-model_provider = "abingo_codex"
-model = "gpt-5.5"
-review_model = "gpt-5.5"
-model_reasoning_effort = "xhigh"
-disable_response_storage = true
-network_access = "enabled"
-model_context_window = 262144
-model_auto_compact_token_limit = 242000
-
-[model_providers.abingo_codex]
-name = "Abingo Codex"
-base_url = "https://codex.abingo.xyz/v1"
-wire_api = "responses"
-requires_openai_auth = true
+```text
+Linux / macOS: ~/.codex/config.toml
+Linux / macOS: ~/.codex/auth.json
+Windows:       C:\Users\<YourUserName>\.codex\config.toml
+Windows:       C:\Users\<YourUserName>\.codex\auth.json
 ```
 
-On Windows, the generated configuration also includes:
+Claude Code configuration:
 
-```toml
-windows_wsl_setup_acknowledged = true
+```text
+Linux / macOS: ~/.claude/settings.json
+Windows:       C:\Users\<YourUserName>\.claude\settings.json
 ```
 
-The generated `auth.json` will look like this:
+## Defaults
 
-```json
-{
-  "OPENAI_API_KEY": "YOUR_ABINGO_CODEX_KEY"
-}
+### Codex
+
+```text
+Service URL: https://codex.abingo.xyz/v1
+Default model: gpt-5.5
+Reasoning effort: xhigh
+Context window: 262144
+Auto compact token limit: 242000
+Auth env: ABINGO_CODEX_KEY, then OPENAI_API_KEY
 ```
 
-## Manual Test
+If `gpt-5.5` is not available, rerun the installer and enter `gpt-5.4` when prompted for the model.
 
-After setup, you can test the service with:
+### Claude Code
+
+```text
+Gateway URL: https://claude.abingo.xyz
+Default model: claude-codex
+Permission mode: bypassPermissions
+Allowed tools: Bash(*)
+Timeout: 600000 ms
+Auth env: ABINGO_CLAUDE_KEY, then ANTHROPIC_AUTH_TOKEN
+```
+
+There is no default token. The installer must receive a token from the environment or from interactive input.
+
+## Python Fallback
+
+Use the Python installers if the shell or PowerShell installer is not suitable.
+
+Codex:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.py | python3 -
+```
+
+Codex on Windows:
+
+```powershell
+irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.py | py -3 -
+```
+
+Claude Code:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.py | python3 -
+```
+
+Claude Code non-interactive:
+
+```bash
+export ABINGO_CLAUDE_KEY="your-gateway-token"
+export ABINGO_CLAUDE_NONINTERACTIVE="1"
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.py | python3 -
+```
+
+## Environment Variables
+
+### Codex Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `ABINGO_CODEX_KEY` | Abingo Codex API key. |
+| `OPENAI_API_KEY` | Fallback key variable used by Codex auth. |
+| `ABINGO_CODEX_MODEL` | Override the default model. |
+| `ABINGO_CODEX_REASONING_EFFORT` | Override reasoning effort. |
+| `ABINGO_CODEX_CONTEXT_WINDOW` | Override model context window. |
+| `ABINGO_CODEX_AUTO_COMPACT_TOKEN_LIMIT` | Override auto compact token limit. |
+
+### Claude Code Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `ABINGO_CLAUDE_KEY` | Abingo Claude gateway token. |
+| `ANTHROPIC_AUTH_TOKEN` | Fallback Claude auth token variable. |
+| `ABINGO_CLAUDE_BASE_URL` | Override the gateway URL. |
+| `ABINGO_CLAUDE_MODEL` | Override the gateway model. |
+| `ABINGO_CLAUDE_EFFORT_LEVEL` | Override Claude Code effort level. |
+| `ABINGO_CLAUDE_TIMEOUT_MS` | Override API timeout in milliseconds. |
+| `ABINGO_CLAUDE_PERMISSION_MODE` | Override Claude Code permission mode. |
+| `ABINGO_CLAUDE_CONFIG_DIR` | Write `settings.json` to a custom directory. |
+| `ABINGO_CLAUDE_HOME` | Use a custom home directory for `.claude`. |
+| `ABINGO_CLAUDE_SKIP_TEST` | Set to `1` to skip the gateway auth test. |
+| `ABINGO_CLAUDE_NONINTERACTIVE` | Set to `1` to use defaults without URL/model prompts. |
+
+## Manual Tests
+
+Codex model list:
 
 ```bash
 curl https://codex.abingo.xyz/v1/models \
   -H "Authorization: Bearer YOUR_ABINGO_CODEX_KEY"
 ```
 
-You can also test a chat request:
+Codex chat request:
 
 ```bash
 curl https://codex.abingo.xyz/v1/chat/completions \
@@ -228,184 +221,50 @@ curl https://codex.abingo.xyz/v1/chat/completions \
   -d '{"model":"gpt-5.5","stream":false,"messages":[{"role":"user","content":"Please reply with success only."}]}'
 ```
 
-Replace:
-
-```text
-YOUR_ABINGO_CODEX_KEY
-```
-
-with your actual Abingo Codex key.
-
-## Updating the Setup
-
-To update your local configuration, simply run the setup command again.
-
-Linux / macOS:
+Claude gateway auth:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
+curl https://claude.abingo.xyz/v1/messages/count_tokens \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ABINGO_CLAUDE_TOKEN" \
+  -d '{"model":"claude-codex","messages":[{"role":"user","content":"installer auth test"}]}'
 ```
 
-Linux / macOS non-interactive:
+## Updating
 
-```bash
-export ABINGO_CODEX_KEY="sk-..."
-curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.sh | sh
-```
-
-Windows PowerShell:
-
-```powershell
-irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/install.ps1 | iex
-```
-
-The setup tool will automatically back up old configuration files before writing new ones.
-
-## Installer Files
-
-This repository provides three installers:
-
-```text
-install.sh    Linux / macOS shell installer
-install.ps1   Windows PowerShell installer
-install.py    Cross-platform Python fallback installer
-```
-
-Recommended usage:
-
-```text
-Linux / macOS:     install.sh
-Windows:           install.ps1
-Fallback:          install.py
-```
-
-## Claude Code Gateway Setup
-
-This repository also provides Claude Code gateway installers:
-
-```text
-claude_install.sh    Linux / macOS shell installer
-claude_install.ps1   Windows PowerShell installer
-claude_install.py    Cross-platform Python fallback installer
-```
-
-They configure Claude Code to use:
-
-```text
-Gateway URL: https://claude.abingo.xyz
-Model: claude-codex
-Permission mode: bypassPermissions
-Allowed tools: Bash(*)
-```
-
-The installers write:
-
-```text
-~/.claude/settings.json
-```
-
-Linux / macOS:
-
-```bash
-export ABINGO_CLAUDE_KEY="your-gateway-token"
-curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
-```
-
-Interactive Linux / macOS install:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
-```
-
-The installer will ask you to enter the gateway token.
-
-Windows PowerShell:
-
-```powershell
-$env:ABINGO_CLAUDE_KEY = "your-gateway-token"
-$env:ABINGO_CLAUDE_NONINTERACTIVE = "1"
-irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
-```
-
-Interactive Windows PowerShell install:
-
-```powershell
-irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
-```
-
-The installer will ask you to enter the gateway token.
-
-Python fallback:
-
-```bash
-ABINGO_CLAUDE_KEY="your-gateway-token" curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.py | python3 -
-```
-
-Supported environment variables:
-
-```text
-ABINGO_CLAUDE_KEY
-ANTHROPIC_AUTH_TOKEN
-ABINGO_CLAUDE_BASE_URL
-ABINGO_CLAUDE_MODEL
-ABINGO_CLAUDE_EFFORT_LEVEL
-ABINGO_CLAUDE_TIMEOUT_MS
-ABINGO_CLAUDE_PERMISSION_MODE
-ABINGO_CLAUDE_CONFIG_DIR
-ABINGO_CLAUDE_HOME
-ABINGO_CLAUDE_SKIP_TEST
-ABINGO_CLAUDE_NONINTERACTIVE
-```
-
-## Security Notes
-
-Do not share your Abingo Codex key publicly.
-
-Do not share your Abingo Claude Gateway token publicly.
-
-Do not commit any of the following files to GitHub:
-
-```text
-auth.json
-config.toml
-.env
-*.pem
-*.key
-*.json
-```
-
-This repository should only contain setup scripts and documentation.
+Run the same installer again whenever you want to refresh local configuration. The old config files will be backed up automatically before new files are written.
 
 ## Troubleshooting
 
-### The `codex` command was not found
+### `codex` or `claude` was not found
 
-The setup tool only configures Codex CLI. You still need Codex CLI installed to run:
-
-```bash
-codex
-```
-
-After installing Codex CLI, close the terminal and open a new one.
+These installers only write configuration files. Install the upstream CLI first, then open a new terminal and try again.
 
 ### Connection test failed
 
-Check:
+Check the key or token, selected model, network access, and gateway status.
 
-- Your Abingo Codex key is correct
-- Your network can access `https://codex.abingo.xyz`
-- The Abingo Codex service is currently available
-- The selected model is available
+### Non-interactive install says the key or token is empty
 
-### GPT-5.5 does not work
+Set the key in the same shell session before running the installer:
 
-Run the setup tool again and enter:
-
-```text
-gpt-5.4
+```bash
+export ABINGO_CODEX_KEY="sk-..."
+export ABINGO_CLAUDE_KEY="your-gateway-token"
 ```
 
-when prompted for the model name.
+## Security
+
+Do not publish or commit real keys or tokens.
+
+These local files contain secrets:
+
+```text
+~/.codex/auth.json
+~/.claude/settings.json
+```
+
+Backup files can also contain old secrets, so keep them private.
 
 ## Repository
 
