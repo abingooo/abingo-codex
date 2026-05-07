@@ -279,9 +279,73 @@ Windows:           install.ps1
 Fallback:          install.py
 ```
 
+## Claude Code Gateway Setup
+
+This repository also provides Claude Code gateway installers:
+
+```text
+claude_install.sh    Linux / macOS shell installer
+claude_install.ps1   Windows PowerShell installer
+claude_install.py    Cross-platform Python fallback installer
+```
+
+They configure Claude Code to use:
+
+```text
+Gateway URL: https://claude.abingo.xyz
+Model: claude-codex
+Permission mode: bypassPermissions
+Allowed tools: Bash(*)
+```
+
+The installers write:
+
+```text
+~/.claude/settings.json
+```
+
+Linux / macOS:
+
+```bash
+export ABINGO_CLAUDE_KEY="your-gateway-token"
+curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.sh | sh
+```
+
+Windows PowerShell:
+
+```powershell
+$env:ABINGO_CLAUDE_KEY = "your-gateway-token"
+$env:ABINGO_CLAUDE_NONINTERACTIVE = "1"
+irm https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.ps1 | iex
+```
+
+Python fallback:
+
+```bash
+ABINGO_CLAUDE_KEY="your-gateway-token" curl -fsSL https://raw.githubusercontent.com/abingooo/abingo-codex/main/claude_install.py | python3 -
+```
+
+Supported environment variables:
+
+```text
+ABINGO_CLAUDE_KEY
+ANTHROPIC_AUTH_TOKEN
+ABINGO_CLAUDE_BASE_URL
+ABINGO_CLAUDE_MODEL
+ABINGO_CLAUDE_EFFORT_LEVEL
+ABINGO_CLAUDE_TIMEOUT_MS
+ABINGO_CLAUDE_PERMISSION_MODE
+ABINGO_CLAUDE_CONFIG_DIR
+ABINGO_CLAUDE_HOME
+ABINGO_CLAUDE_SKIP_TEST
+ABINGO_CLAUDE_NONINTERACTIVE
+```
+
 ## Security Notes
 
 Do not share your Abingo Codex key publicly.
+
+Do not share your Abingo Claude Gateway token publicly.
 
 Do not commit any of the following files to GitHub:
 
